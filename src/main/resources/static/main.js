@@ -1,7 +1,13 @@
 // 初始化 DataTable1
 function initDataTable1() {
     new DataTable('#myTable1', {
-        ajax: 'http://localhost:8080/products',
+        ajax: {
+          url: 'http://localhost:8080/products',
+            data: {
+
+                status: 1 // 0: 下架 1: 上架
+            }
+        },
         processing: true,
         serverSide: true,
         columns: [
@@ -41,40 +47,46 @@ function initDataTable1() {
 // 初始化 DataTable2
 function initDataTable2() {
     new DataTable('#myTable2', {
-        ajax: 'http://localhost:3000/mylist',
+        ajax: {
+            url: 'http://localhost:8080/products',
+            data: {
+
+                status: 0 // 0: 下架 1: 上架
+            }
+        },
+        processing: true,
+        serverSide: true,
         columns: [
-            { data: 'id', title: 'Id' },
-            { data: 'name', title: 'Name' },
-            { data: 'date', title: 'Date' },
-            { data: 'status', title: 'Status' }
-        ],
-        dom: 'Bfrtip',
-        buttons: [
-            'excelHtml5',
             {
-                extend: 'pdfHtml5',
-                orientation: 'portrait',
-                pageSize: 'LEGAL'
+                data: null,
+                title: '<input type="checkbox" id="select-all">',
+                render: function (data, type, row) {
+                    return '<input class="form-check-input" type="checkbox" value="' + row.id + '" id="flexCheckDefault' + row.id + '" onchange="handleCheckboxChange(this)">';
+                }
             },
+            { data: 'productId', title: '編號' },
+            { data: 'productName', title: '商品名稱' },
+            { data: 'price', title: '價錢' },
+            { data: 'stock', title: '剩餘庫存' },
+            { data: 'picture', title: '圖片' },
+            // {
+            //     data: 'status', title: 'Status',
+            //     render: function (data, type, row) {
+            //         return '<span class="badge bg-secondary">下架</span>';
+            //     }
+            // },
             {
-                extend: 'print',
-                pageSize: 'LEGAL',
-                title: 'Visible rows'
-            },
-            {
-                extend: 'selectAll',
-                className: 'selectall',
-                action: function (e) {
-                    e.preventDefault();
-                    table.rows({ page: 'all' }).nodes().each(function () {
-                        $(this).removeClass('selected');
-                    });
-                    table.rows({ search: 'applied' }).nodes().each(function () {
-                        $(this).addClass('selected');
-                    });
+                data: null, title: '操作',
+                render: function (data, type, row) {
+                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="removeItem(' + row.id + ')">下架</button>' +
+                        '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.id + '" role="button" data-bs-target="#popup">編輯</a>' +
+                        '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.id + ')">刪除</button>';
                 }
             }
-        ]
+        ],
+        paging: true,
+        columnDefs: [{ orderable: false, targets: [0, 2, 4, 5] }],
+        order: [[1, 'asc']]
     });
 }
 

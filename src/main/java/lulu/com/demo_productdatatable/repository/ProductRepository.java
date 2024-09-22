@@ -13,7 +13,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     // 查詢上架且產品名稱符合的產品
     List<Product> findByProductNameAndProductType(String productName, Integer productType);
 
-    // 查詢已上架的產品
-    @Query("SELECT p FROM Product p WHERE p.productType = 1")
-    List<Product> findAllAvailableProducts();
+    // 查詢上架或下架商品
+
+    @Query("select p from Product p where p.productType = ?1")
+    List<Product> findByProductType(Integer productType);
+
+
 }

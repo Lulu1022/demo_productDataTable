@@ -40,9 +40,10 @@ public class ProductController {
             @RequestParam int length,
             @RequestParam(name = "search[value]", required = false) String searchValue,
             @RequestParam(name = "order[0][column]", required = false) Integer orderColumn,
-            @RequestParam(name = "order[0][dir]", required = false) String orderDirection
+            @RequestParam(name = "order[0][dir]", required = false) String orderDirection,
+            @RequestParam(name = "status", required = true) Integer status // 接收上架
     ){
-        Map<String, Object> result = productService.getData(draw, start, length, searchValue, orderColumn, orderDirection);
+        Map<String, Object> result = productService.getData(draw, start, length, searchValue, orderColumn, orderDirection, status);
         // 返回帶有結果的 ResponseEntity
         return ResponseEntity.ok(result);
     }

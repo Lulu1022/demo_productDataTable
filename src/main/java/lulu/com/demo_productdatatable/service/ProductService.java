@@ -38,7 +38,7 @@ public class ProductService {
     }
 
 
-    public Map<String, Object> getData(int draw, int start, int length, String searchValue, Integer orderColumn, String orderDirection) {
+    public Map<String, Object> getData(int draw, int start, int length, String searchValue, Integer orderColumn, String orderDirection, Integer status) {
         // 準備返回的 Map
         Map<String, Object> result = new HashMap<>();
 
@@ -47,7 +47,7 @@ public class ProductService {
         if (searchValue != null && !searchValue.isEmpty()) {
             filteredProducts = productRepository.findByProductNameAndProductType(searchValue,1);
         } else {
-              filteredProducts = productRepository.findAllAvailableProducts();
+              filteredProducts = productRepository.findByProductType(status);
         }
 
         // 排序邏輯處理

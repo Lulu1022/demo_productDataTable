@@ -33,7 +33,7 @@ public class ProductController {
      * recordsFiltered：經過篩選後的記錄數。
      * data：實際的產品數據列表（通常是 DTO 格式的數據）。
      */
-    @GetMapping
+    @GetMapping("/shelf")
     public ResponseEntity<Map<String, Object>> getData(
             @RequestParam int draw,
             @RequestParam int start,

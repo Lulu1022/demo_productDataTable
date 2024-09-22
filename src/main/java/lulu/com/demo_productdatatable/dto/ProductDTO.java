@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +12,7 @@ public class ProductDTO {
     private String productName;
     private int price;
     private int stock;
+    private Integer productType; // 0:下架 1:上架
+
     private String picture; // 來自 product_pictures 表
 }

@@ -25,7 +25,7 @@ public class ProductController {
      * @param start 分頁的起始索引，表示查詢從哪個數據開始（例如第幾筆數據開始）
      * @param length 每頁的數據長度，表示一次查詢最多返回多少條數據。
      * @param searchValue 可選參數，用來處理前端的查詢過濾（例如依據產品名稱進行模糊搜索）
-     * @param orderColumn 用來指定排序的列（對應表格的哪一列），例如可以按價格、產品名稱等排序。
+     * @param orderColumn 用來指定排序的列（對應表格的哪一列），例如可以按價格、產品名稱等排序 (欄位從 0 開始)
      * @param orderDirection 指定排序方向，可能是 asc（升序）或 desc（降序）
      * @return
      * draw：前端數據表格的同步查詢次數。

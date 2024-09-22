@@ -32,6 +32,7 @@ public class ProductService {
                 product.getProductName(),
                 product.getPrice(),
                 product.getStock(),
+                product.getProductType(),
                 pictureName
         );
     }
@@ -44,9 +45,9 @@ public class ProductService {
         // 搜尋條件處理 (例如根據產品名稱進行篩選)
         List<Product> filteredProducts;
         if (searchValue != null && !searchValue.isEmpty()) {
-            filteredProducts = productRepository.findByProductNameContaining(searchValue);
+            filteredProducts = productRepository.findByProductNameAndProductType(searchValue,1);
         } else {
-            filteredProducts = productRepository.findAll();
+              filteredProducts = productRepository.findAllAvailableProducts();
         }
 
         // 排序邏輯處理

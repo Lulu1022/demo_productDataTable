@@ -13,9 +13,9 @@ function initDataTable1() {
         columns: [
             {
                 data: null,
-                title: '<input type="checkbox" id="select-all">',
+                title: '<input type="checkbox" id="select-all-table1">',
                 render: function (data, type, row) {
-                    return '<input class="form-check-input" type="checkbox" value="' + row.id + '" id="flexCheckDefault' + row.id + '" onchange="handleCheckboxChange(this)">';
+                    return '<input class="form-check-input" type="checkbox" value="' + row.productId + '" id="flexCheckDefault' + row.productId + '" onchange="handleCheckboxChange(this)">';
                 }
             },
             { data: 'productId', title: '編號' },
@@ -32,9 +32,9 @@ function initDataTable1() {
             {
                 data: null, title: '操作',
                 render: function (data, type, row) {
-                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="removeItem(' + row.id + ')">下架</button>' +
-                        '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.id + '" role="button" data-bs-target="#popup">編輯</a>' +
-                        '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.id + ')">刪除</button>';
+                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="delistItem(' + row.productId + ')">下架</button>' +
+                        '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.productId + '" role="button" data-bs-target="#popup">編輯</a>' +
+                        '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.productId + ')">刪除</button>';
                 }
             }
         ],
@@ -59,9 +59,9 @@ function initDataTable2() {
         columns: [
             {
                 data: null,
-                title: '<input type="checkbox" id="select-all">',
+                title: '<input type="checkbox" id="select-all-table2">',
                 render: function (data, type, row) {
-                    return '<input class="form-check-input" type="checkbox" value="' + row.id + '" id="flexCheckDefault' + row.id + '" onchange="handleCheckboxChange(this)">';
+                    return '<input class="form-check-input" type="checkbox" value="' + row.productId + '" id="flexCheckDefault' + row.productId + '" onchange="handleCheckboxChange(this)">';
                 }
             },
             { data: 'productId', title: '編號' },
@@ -70,32 +70,26 @@ function initDataTable2() {
             { data: 'stock', title: '剩餘庫存' },
             { data: 'picture', title: '圖片' },
             // {
-            //     data: 'status', title: 'Status',
+            //     data: null, title: '操作',
             //     render: function (data, type, row) {
-            //         return '<span class="badge bg-secondary">下架</span>';
+            //         return '<button type="button" class="btn btn-success btn-sm me-3" onclick="delistItem(' + row.productId + ')">下架</button>' +
+            //             '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.productId + '" role="button" data-bs-target="#popup">編輯</a>' +
+            //             '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.productId + ')">刪除</button>';
             //     }
-            // },
-            {
-                data: null, title: '操作',
-                render: function (data, type, row) {
-                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="removeItem(' + row.id + ')">下架</button>' +
-                        '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.id + '" role="button" data-bs-target="#popup">編輯</a>' +
-                        '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.id + ')">刪除</button>';
-                }
-            }
+            // }
         ],
         paging: true,
-        columnDefs: [{ orderable: false, targets: [0, 2, 4, 5] }],
+        columnDefs: [{ orderable: false, targets: [0, 1, 2, 3, 4, 5] }],
         order: [[1, 'asc']]
     });
 }
 
 // 綁定全選 Checkbox 事件
 function bindCheckboxEvents() {
-    document.getElementById('select-all').addEventListener('change', function () {
+    document.getElementById('select-all-table1').addEventListener('change', function () {
         var checkboxes = document.querySelectorAll('#myTable1 input[type="checkbox"]');
         checkboxes.forEach(function (checkbox) {
-            checkbox.checked = document.getElementById('select-all').checked;
+            checkbox.checked = document.getElementById('select-all-table1').checked;
             handleCheckboxChange(checkbox); // 處理每個 checkbox 狀態變化
         });
     });
@@ -108,11 +102,6 @@ function handleCheckboxChange(checkbox) {
     console.log("Checkbox " + checkbox.value + " 狀態變化：" + checkbox.checked);
 }
 
-// 下架功能
-function shelf(id) {
-    console.log("下架商品 ID: " + id);
-    // 在這裡添加下架商品的邏輯
-}
 
 // 綁定批次下架按鈕和再次確認按鈕事件
 document.getElementById('removeAll').addEventListener('click', function() {
@@ -156,24 +145,55 @@ document.getElementById('removeAll').addEventListener('click', function() {
 });
 
 // 綁定下架功能能和彈出模態框邏輯
-function removeItem(id) {
+function delistItem(id) {
     itemIdToRemove = id; // 保存當前要下架的商品 ID
     const removeProductModal = new bootstrap.Modal(document.getElementById('confirmRemoveProductModal'));
     removeProductModal.show(); // 顯示模態框
 
     // 綁定確認刪除的按鈕邏輯
-    document.getElementById('confirmRemoveProductBtn').addEventListener('click', function() {
+    document.getElementById('confirmRemoveProductBtn').addEventListener('click', async function () {
         if (itemIdToRemove !== null) {
             console.log("確認下架商品 ID: " + itemIdToRemove);
             // 在這裡添加下架商品的實際邏輯，例如發送 API 請求
-
-
+            await unshelveProduct(itemIdToRemove,1) // 目前商品狀態是 1:上架
             itemIdToRemove = null; // 清空 ID
             removeProductModal.hide(); // 關閉模態框
+
+
+            // 重新加載 DataTable 的數據
+            $('#myTable1').DataTable().ajax.reload();
+            $('#myTable2').DataTable().ajax.reload();
         }
     }, { once: true });  // 使用 { once: true } 確保按鈕事件只執行一次
 }
 
+// 【PUT】/products 下架功能
+async function unshelveProduct(productIds, status){
+    const url = '/products';
+
+    // 如果 productIds 是單一數字，包裝成陣列
+    // if (!Array.isArray(productIds)) {
+    //     productIds = [productIds]; // 將單一數字轉為陣列
+    // }
+    const requestBody = {
+        productIds: [productIds],
+        status: status
+    };
+    return fetch(url, {
+        method: 'PUT', // 指定 HTTP 方法為 PUT
+        headers: {
+            'Content-Type': 'application/json' // 設置內容類型為 JSON
+        },
+        body: JSON.stringify(requestBody) // 將資料轉換為 JSON 格式發送
+    })
+        .then(response => {
+            console.log(response)
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+    });
+}
 
 // 綁定刪除功能和彈出模態框邏輯
 function deleteItem(id) {

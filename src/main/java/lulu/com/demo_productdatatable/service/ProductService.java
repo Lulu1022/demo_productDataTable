@@ -45,7 +45,7 @@ public class ProductService {
         // 搜尋條件處理 (例如根據產品名稱進行篩選)
         List<Product> filteredProducts;
         if (searchValue != null && !searchValue.isEmpty()) {
-            filteredProducts = productRepository.findByProductNameAndProductType(searchValue,1);
+            filteredProducts = productRepository.findByProductNameAndProductType(searchValue,status);
         } else {
               filteredProducts = productRepository.findByProductType(status);
         }
@@ -86,5 +86,21 @@ public class ProductService {
         result.put("data", productDTOs);
 
         return result;
+    }
+
+    public void updateProductsStatus(List<Integer> productIds, Integer status) {
+        List<Product> products = productRepository.findAllById(productIds);
+        if(status == 1){
+            // 上架 -> 下架
+            products.forEach(product -> product.setProductType(0));
+            productRepository.saveAll(products);
+        }
+        else{
+            // 下架 -> 上架
+            products.forEach(product -> product.setProductType(1));
+            productRepository.saveAll(products);
+        }
+
+
     }
 }

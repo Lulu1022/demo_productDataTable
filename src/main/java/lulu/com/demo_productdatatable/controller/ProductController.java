@@ -1,14 +1,13 @@
 package lulu.com.demo_productdatatable.controller;
 
 import lulu.com.demo_productdatatable.dto.ProductDTO;
+import lulu.com.demo_productdatatable.request.ProductStatusUpdateRequest;
 import lulu.com.demo_productdatatable.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,5 +45,19 @@ public class ProductController {
         Map<String, Object> result = productService.getData(draw, start, length, searchValue, orderColumn, orderDirection, status);
         // 返回帶有結果的 ResponseEntity
         return ResponseEntity.ok(result);
+    }
+
+    // 更新產品上/下架狀態
+    @PutMapping
+    public ResponseEntity<Map<String, String>> batchChangeStatus(@RequestBody ProductStatusUpdateRequest request) {
+        List<Integer> productIds = request.getProductIds();
+        Integer status = request.getStatus();
+
+        productService.updateProductsStatus(productIds,status);
+
+        // 返回 JSON 格式的消息
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "批次下架成功");
+        return ResponseEntity.ok(response);
     }
 }

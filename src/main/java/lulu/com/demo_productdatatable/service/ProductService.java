@@ -53,15 +53,15 @@ public class ProductService {
         if (orderColumn != null && orderDirection != null) {
             filteredProducts = filteredProducts.stream().sorted((p1, p2) -> {
                 switch (orderColumn) {
-                    case 1: // 排序依據產品名稱
+                    case 1: // 排序依據產品編號
                         return "asc".equalsIgnoreCase(orderDirection) ?
-                                p1.getProductName().compareTo(p2.getProductName()) :
-                                p2.getProductName().compareTo(p1.getProductName());
-                    case 2: // 排序依據價格
+                                p1.getId().compareTo(p2.getId()) :
+                                p2.getId().compareTo(p1.getId());
+                    case 3: // 排序依據價格
                         return "asc".equalsIgnoreCase(orderDirection) ?
                                 p1.getPrice().compareTo(p2.getPrice()) :
                                 p2.getPrice().compareTo(p1.getPrice());
-                    case 3: // 排序依據庫存
+                    case 4: // 排序依據庫存
                         return "asc".equalsIgnoreCase(orderDirection) ?
                                 p1.getStock().compareTo(p2.getStock()) :
                                 p2.getStock().compareTo(p1.getStock());

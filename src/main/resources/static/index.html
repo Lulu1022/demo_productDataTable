@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!--  CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.bootstrap5.css">
+
+    <!--  JavaScript 檔案 -->
+    <script defer src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script defer src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
+    <script defer src="https://cdn.datatables.net/2.1.7/js/dataTables.bootstrap5.js"></script>
+    <script defer src="https://cdn.datatables.net/select/2.1.0/js/dataTables.select.js"></script>
+
+    <!--  main.js 檔案 -->
+    <script defer src="main.js"></script>
+</head>
+<body>
+    <div class="container ">
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation"><button class="nav-link active" href="#tab-table1" data-bs-toggle="tab" data-bs-target="#tab-table1">已上架</button></li>
+                <li><button class="nav-link" href="#tab-table2" data-bs-toggle="tab" data-bs-target="#tab-table2">已下架</button></li>
+            </ul>
+            <div class="tab-content pt-2">
+                <div class="tab-pane show active" id="tab-table1">
+<!--                    <div>-->
+<!--                        <button id="selectAllBtn1" class="btn btn-outline-primary mb-2 mt-3">全選</button>-->
+<!--                        <button id="selectAllBtn2" class="btn btn-outline-secondary mb-2 mt-3">取消</button>-->
+<!--                    </div>-->
+                    <button id="removeAll" class="btn btn-success mt-3">批次下架</button>
+                    <table id="myTable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+
+                    </table>
+                </div>
+                <div class="tab-pane" id="tab-table2">
+                    <table id="myTable2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+<!--                        <thead>-->
+<!--                        <tr>-->
+
+<!--                            <th>Name</th>-->
+<!--                            <th>Position</th>-->
+<!--                            <th>Office</th>-->
+<!--                            <th>Extn.</th>-->
+<!--                            <th>Start date</th>-->
+<!--                            <th>Salary</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刪除商品再次確認 popup -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認刪除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    你確定要刪除該商品嗎？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">確認刪除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 下架商品再次確認 popup -->
+    <div class="modal fade" id="confirmRemoveProductModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認下架</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    你確定要下架該商品嗎？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveProductBtn">確認下架</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批次下架再次確認 popup -->
+    <div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">確認批次下架</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    你確定要批次下架該商品嗎？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmShelfModal">確認下架</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

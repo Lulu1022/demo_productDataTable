@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品編輯</title>
+</head>
+<body>
+<h3>商品編輯頁面</h3>
+<p>正在編輯商品 <span id="productId"></span></p>
+</body>
+</html>
+
+<script>
+    // 從 URL 中讀取查詢參數
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    // 確認是否正確抓取到商品ID
+    console.log("編輯的商品 ID: " + productId);
+
+    // 顯示商品ID在頁面上
+    if (productId) {
+        document.getElementById('productId').textContent = productId;
+    } else {
+        document.getElementById('productId').textContent = "無效的商品ID";
+    }
+
+    // 在這裡你可以根據 productId 從後端獲取對應商品的數據，然後顯示在頁面上
+</script>

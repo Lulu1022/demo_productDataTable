@@ -13,7 +13,7 @@ function initDataTable1() {
         columns: [
             {
                 data: null,
-                title: '<input type="checkbox" id="select-all-table1">',
+                title: '<input type="checkbox" id="select-all-table1" onclick="checkAll(this)">',
                 render: function (data, type, row) {
                     return '<input class="form-check-input" type="checkbox" value="' + row.productId + '" id="flexCheckDefault' + row.productId + '" onchange="handleCheckboxChange(this)">';
                 }
@@ -22,17 +22,10 @@ function initDataTable1() {
             { data: 'productName', title: '商品名稱' },
             { data: 'price', title: '價錢' },
             { data: 'stock', title: '剩餘庫存' },
-            { data: 'picture', title: '圖片' },
-            // {
-            //     data: 'status', title: 'Status',
-            //     render: function (data, type, row) {
-            //         return '<span class="badge bg-secondary">下架</span>';
-            //     }
-            // },
             {
                 data: null, title: '操作',
                 render: function (data, type, row) {
-                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="delistItem(' + row.productId + ')">下架</button>' +
+                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="changeProductStatus(this,' + row.productId + ')">下架</button>' +
                         '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.productId + '" role="button" data-bs-target="#popup">編輯</a>' +
                         '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.productId + ')">刪除</button>';
                 }
@@ -59,7 +52,7 @@ function initDataTable2() {
         columns: [
             {
                 data: null,
-                title: '<input type="checkbox" id="select-all-table2">',
+                title: '<input type="checkbox" id="select-all-table2" onclick="checkAll(this)">',
                 render: function (data, type, row) {
                     return '<input class="form-check-input" type="checkbox" value="' + row.productId + '" id="flexCheckDefault' + row.productId + '" onchange="handleCheckboxChange(this)">';
                 }
@@ -68,115 +61,187 @@ function initDataTable2() {
             { data: 'productName', title: '商品名稱' },
             { data: 'price', title: '價錢' },
             { data: 'stock', title: '剩餘庫存' },
-            { data: 'picture', title: '圖片' },
-            // {
-            //     data: null, title: '操作',
-            //     render: function (data, type, row) {
-            //         return '<button type="button" class="btn btn-success btn-sm me-3" onclick="delistItem(' + row.productId + ')">下架</button>' +
-            //             '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.productId + '" role="button" data-bs-target="#popup">編輯</a>' +
-            //             '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.productId + ')">刪除</button>';
-            //     }
-            // }
+            {
+                data: null, title: '操作',
+                render: function (data, type, row) {
+                    return '<button type="button" class="btn btn-success btn-sm me-3" onclick="changeProductStatus(this,' + row.productId + ')">上架</button>' +
+                        '<a class="btn btn-sm btn-primary me-3" href="edit.html?id=' + row.productId + '" role="button" data-bs-target="#popup">編輯</a>' +
+                        '<button type="button" class="btn btn-danger btn-sm me-3" onclick="deleteItem(' + row.productId + ')">刪除</button>';
+                }
+            }
         ],
         paging: true,
-        columnDefs: [{ orderable: false, targets: [0, 1, 2, 3, 4, 5] }],
+        columnDefs: [{ orderable: false, targets: [0, 2, 4, 5] }],
         order: [[1, 'asc']]
     });
 }
 
-// 綁定全選 Checkbox 事件
-function bindCheckboxEvents() {
-    document.getElementById('select-all-table1').addEventListener('change', function () {
-        var checkboxes = document.querySelectorAll('#myTable1 input[type="checkbox"]');
+/**
+ * 全部勾選/取消全部勾選
+ */
+
+let checkedList = []
+function checkAll(element){
+    // 動態選擇表格
+    let tableId = element.id === 'select-all-table1' ? '#myTable1' : '#myTable2';
+
+    var checkboxes = document.querySelectorAll(`${tableId} input[type="checkbox"]`);
+    // 檢查全選框的狀態
+    if (element.checked) {
+        // 如果全選框被勾選，將所有的 checkbox 勾選並加入 checkedList
+        checkedList = []; // 先清空 checkedList
         checkboxes.forEach(function (checkbox) {
-            checkbox.checked = document.getElementById('select-all-table1').checked;
-            handleCheckboxChange(checkbox); // 處理每個 checkbox 狀態變化
+            checkbox.checked = true;
+            if (checkbox.value !== 'on') { // 避免將非目標值加入
+                checkedList.push(checkbox.value);
+            }
         });
-    });
+    } else {
+        // 如果全選框未勾選，取消所有的 checkbox 並清空 checkedList
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = false;
+        });
+        checkedList = []; // 清空已勾選的列表
+    }
+
+    console.log('已勾選項目:', checkedList);  // 輸出已勾選的項目
 }
 
+/**
+ * 單一勾選
+ */
+function handleCheckboxChange(element) {
+    const value = element.value;
 
-// 處理單個 checkbox 的狀態變化
-function handleCheckboxChange(checkbox) {
-    // 這裡可以添加處理邏輯，例如更新選中的商品
-    console.log("Checkbox " + checkbox.value + " 狀態變化：" + checkbox.checked);
-}
-
-
-// 綁定批次下架按鈕和再次確認按鈕事件
-document.getElementById('removeAll').addEventListener('click', function() {
-    const confirmRemoveModal = new bootstrap.Modal(document.getElementById('confirmRemoveModal'));
-    confirmRemoveModal.show();
-
-    // 綁定模態框內的確認下架按鈕事件，這樣每次模態框打開時都會綁定
-    document.getElementById('confirmShelfModal').addEventListener('click', function() {
-        confirmRemoveModal.hide(); // 關閉模態框
-
-        // 收集所有被選中的商品 ID
-        const selectedItems = [];
-        document.querySelectorAll('#myTable1 input[type="checkbox"]:checked').forEach(function(checkbox) {
-            selectedItems.push(checkbox.value);  // 將選中的商品 ID 添加到數組中
-        });
-
-        console.log('已下架:',selectedItems);
-
-        // if (selectedItems.length > 0) {
-        //     console.log('批次下架的商品 ID: ', selectedItems);
-        //
-        //     // 發送批次下架請求到後端
-        //     fetch('/bulkUnpublish', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({ ids: selectedItems })  // 將選中的 ID 傳到後端
-        //     })
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             console.log('批次下架成功', data);
-        //             // 重新加載 DataTable1 的數據
-        //             $('#myTable1').DataTable().ajax.reload();  // 重新從後端獲取最新資料並更新表格
-        //         })
-        //         .catch(error => console.error('批次下架失敗', error));
-        // } else {
-        //     console.log('沒有選中的商品');
-        // }
-    }, { once: true });  // 使用 { once: true } 確保這個事件只會觸發一次
-});
-
-// 綁定下架功能能和彈出模態框邏輯
-function delistItem(id) {
-    itemIdToRemove = id; // 保存當前要下架的商品 ID
-    const removeProductModal = new bootstrap.Modal(document.getElementById('confirmRemoveProductModal'));
-    removeProductModal.show(); // 顯示模態框
-
-    // 綁定確認刪除的按鈕邏輯
-    document.getElementById('confirmRemoveProductBtn').addEventListener('click', async function () {
-        if (itemIdToRemove !== null) {
-            console.log("確認下架商品 ID: " + itemIdToRemove);
-            // 在這裡添加下架商品的實際邏輯，例如發送 API 請求
-            await unshelveProduct(itemIdToRemove,1) // 目前商品狀態是 1:上架
-            itemIdToRemove = null; // 清空 ID
-            removeProductModal.hide(); // 關閉模態框
-
-
-            // 重新加載 DataTable 的數據
-            $('#myTable1').DataTable().ajax.reload();
-            $('#myTable2').DataTable().ajax.reload();
+    if (element.checked) {
+        // 如果勾選，且 checkedList 中尚未存在該值，則加入
+        if (!checkedList.includes(value)) {
+            checkedList.push(value);
         }
-    }, { once: true });  // 使用 { once: true } 確保按鈕事件只執行一次
+    } else {
+        // 如果取消勾選，從 checkedList 中移除該值
+        checkedList = checkedList.filter(item => item !== value);
+    }
+
+    console.log('已勾選項目:', checkedList);  // 列出所有被勾選的項目
+
+    // 檢查是否所有 checkbox 都已勾選，如果是，則全選框也應被勾選
+    const allCheckboxes = document.querySelectorAll('#myTable1 input[type="checkbox"]');
+    const allChecked = Array.from(allCheckboxes).every(checkbox => checkbox.checked);
+    document.getElementById('select-all-table1').checked = allChecked;
+    document.getElementById('select-all-table2').checked = allChecked;
 }
 
-// 【PUT】/products 下架功能
-async function unshelveProduct(productIds, status){
+
+/**
+ * 批次更新(上架/下架)狀態
+ */
+const confirmRemoveModal = new bootstrap.Modal(document.getElementById('confirmRemoveModal'));
+const confirmUploadModal = new bootstrap.Modal(document.getElementById('confirmUploadModal'));
+function batchChangeStatus(element){
+    const text = element.innerHTML
+    if(text === '批次下架'){
+        // 顯示提醒視窗
+        confirmRemoveModal.show();
+        console.log('打開下架提醒視窗');
+    }
+    if(text === '批次上架'){
+        // 顯示提醒視窗
+        confirmUploadModal.show();
+        console.log('打開上架提醒視窗');
+    }
+}
+
+async function confirmBatchChangStatus(element){
+    console.log('顯示提醒視窗確認');
+    // 取得被勾選的項目
+    console.log(checkedList);
+    console.log('呼叫 API')
+
+    if(element.dataset.status === 'unshelve'){
+        await changeProductStatusAPI(checkedList,1) // 目前商品狀態上架:1
+        console.log('關閉提醒視窗');
+        confirmRemoveModal.hide();
+    }
+
+    if(element.dataset.status === 'shelve'){
+        await changeProductStatusAPI(checkedList,0) // 目前商品狀態下架:0
+        console.log('關閉提醒視窗');
+        confirmUploadModal.hide();
+    }
+
+    // 重新載入兩張 table
+    $('#myTable1').DataTable().ajax.reload();
+    $('#myTable2').DataTable().ajax.reload();
+
+}
+
+/**
+ * 單一商品上/下架
+ */
+function changeProductStatus(item,id){
+    const text = item.innerHTML
+    if(text === '下架'){
+        console.log(item + '準備被下架');
+        // 將被勾選的商品加到 checkedList
+        checkedList = [];
+        checkedList.push(id);
+        confirmRemoveModal.show();
+    }
+    if(text === '上架'){
+        console.log(item + '準備被上架');
+        // 將被勾選的商品加到 checkedList
+        checkedList = [];
+        checkedList.push(id);
+        confirmUploadModal.show();
+    }
+
+}
+
+
+/**
+ * 單一商品刪除
+ */
+let deleteList = []
+const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+function deleteItem(item){
+    console.log(item + '準備被刪除');
+    // 將要被刪除的項目加到 checkedList
+    deleteList = [];
+    deleteList.push(item);
+    confirmDeleteModal.show();
+    console.log('打開提醒視窗');
+}
+
+
+async function deleteProduct(){
+    console.log('顯示提醒視窗確認');
+    // 取得被勾選的項目
+    console.log(deleteList);
+    console.log('呼叫 API')
+
+    // 刪除商品 API
+    await deleteProductAPI(deleteList);
+
+    console.log('關閉提醒視窗');
+    confirmDeleteModal.hide();
+
+    // 重新載入兩張 table
+    $('#myTable1').DataTable().ajax.reload();
+    $('#myTable2').DataTable().ajax.reload();
+}
+
+/**
+ * 更改商品狀態 API
+ * @param productIds
+ * @param status
+ * @returns {Promise<any>}
+ */
+async function changeProductStatusAPI(productIds, status){
     const url = '/products';
 
-    // 如果 productIds 是單一數字，包裝成陣列
-    // if (!Array.isArray(productIds)) {
-    //     productIds = [productIds]; // 將單一數字轉為陣列
-    // }
     const requestBody = {
-        productIds: [productIds],
+        productIds: productIds,
         status: status
     };
     return fetch(url, {
@@ -195,31 +260,53 @@ async function unshelveProduct(productIds, status){
     });
 }
 
-// 綁定刪除功能和彈出模態框邏輯
-function deleteItem(id) {
-    itemIdToDelete = id; // 保存當前要刪除的商品 ID
-    const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-    deleteModal.show(); // 顯示模態框
+async function deleteProductAPI(productIds) {
+    // 確保 productIds 是一個陣列
+    if (!Array.isArray(productIds)) {
+        productIds = [productIds];
+    }
 
-    // 綁定確認刪除的按鈕邏輯
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-        if (itemIdToDelete !== null) {
-            console.log("確認刪除商品 ID: " + itemIdToDelete);
-            // 在這裡添加刪除商品的實際邏輯，例如發送 API 請求
-            // fetch(`/deleteProduct/${itemIdToDelete}`, { method: 'DELETE' })
-            //     .then(response => response.json())
-            //     .then(data => console.log("商品已刪除", data));
+    const url = '/products';
 
-            itemIdToDelete = null; // 清空 ID
-            deleteModal.hide(); // 關閉模態框
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(productIds)
+        });
+
+        // 確認 API 回應
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.statusText);
         }
-    }, { once: true });  // 使用 { once: true } 確保按鈕事件只執行一次
-}
 
+        // 解析回應數據
+        const data = await response.json();
+        console.log('產品刪除成功', data);
+        return data;
+    } catch (error) {
+        console.error('刪除產品時發生錯誤:', error);
+        throw error;
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', function () {
     initDataTable1();
     initDataTable2();
     bindCheckboxEvents();
+});
+
+
+// 監聽 Bootstrap 的 Tab 切換事件
+document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
+    tab.addEventListener('shown.bs.tab', function (event) {
+        // 每次切換 Tab 清空 checkedList
+        checkedList = [];
+        // 每次切換 Tab 清空 checkedList
+        deleteList = [];
+        console.log('Tab 切換，已清空 checkedList 和 deleteList');
+    });
 });

@@ -19,24 +19,17 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private ProductPictureRepository productPictureRepository;
-
+    // 簡化後的 convertToDTO，移除圖片處理
     private ProductDTO convertToDTO(Product product) {
-        // 查詢對應產品的圖片
-        List<ProductPicture> pictures = productPictureRepository.findByProductId(product.getId());
-        String pictureName = pictures.isEmpty() ? null : pictures.get(0).getPictureName(); // 假設只取第一張圖片
-
         return new ProductDTO(
                 product.getId(),
                 product.getProductName(),
                 product.getPrice(),
                 product.getStock(),
                 product.getProductType(),
-                pictureName
+                null  // 圖片相關的字段設為 null
         );
     }
-
 
     public Map<String, Object> getData(int draw, int start, int length, String searchValue, Integer orderColumn, String orderDirection, Integer status) {
         // 準備返回的 Map
@@ -45,9 +38,9 @@ public class ProductService {
         // 搜尋條件處理 (例如根據產品名稱進行篩選)
         List<Product> filteredProducts;
         if (searchValue != null && !searchValue.isEmpty()) {
-            filteredProducts = productRepository.findByProductNameAndProductType(searchValue,status);
+            filteredProducts = productRepository.findByProductNameAndProductType(searchValue, status);
         } else {
-              filteredProducts = productRepository.findByProductType(status);
+            filteredProducts = productRepository.findByProductType(status);
         }
 
         // 排序邏輯處理
@@ -90,17 +83,22 @@ public class ProductService {
 
     public void updateProductsStatus(List<Integer> productIds, Integer status) {
         List<Product> products = productRepository.findAllById(productIds);
-        if(status == 1){
+        if (status == 1) {
             // 上架 -> 下架
             products.forEach(product -> product.setProductType(0));
             productRepository.saveAll(products);
-        }
-        else{
+        } else {
             // 下架 -> 上架
             products.forEach(product -> product.setProductType(1));
             productRepository.saveAll(products);
         }
+    }
 
+    public void deleteProducts(List<Integer> productIds) {
+        // 檢查是否存在這些產品 ID
+        List<Product> products = productRepository.findAllById(productIds);
 
+        // 刪除產品
+        productRepository.deleteAll(products);
     }
 }

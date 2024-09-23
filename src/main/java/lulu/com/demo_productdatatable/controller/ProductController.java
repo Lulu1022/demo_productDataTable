@@ -47,7 +47,11 @@ public class ProductController {
         return ResponseEntity.ok(result);
     }
 
-    // 更新產品上/下架狀態
+    /**
+     * 上架/下架產品
+     * @param request
+     * @return
+     */
     @PutMapping
     public ResponseEntity<Map<String, String>> batchChangeStatus(@RequestBody ProductStatusUpdateRequest request) {
         List<Integer> productIds = request.getProductIds();
@@ -57,7 +61,21 @@ public class ProductController {
 
         // 返回 JSON 格式的消息
         Map<String, String> response = new HashMap<>();
-        response.put("message", "批次下架成功");
+        response.put("message", "下架成功");
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 刪除產品
+     * @param productIds
+     * @return
+     */
+    @DeleteMapping
+    public ResponseEntity<Map<String, String>> deleteProducts(@RequestBody List<Integer> productIds) {
+        productService.deleteProducts(productIds);
+        // 返回 JSON 格式的消息
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "刪除成功");
         return ResponseEntity.ok(response);
     }
 }

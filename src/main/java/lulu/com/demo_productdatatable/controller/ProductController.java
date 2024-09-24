@@ -1,6 +1,4 @@
 package lulu.com.demo_productdatatable.controller;
-
-import lulu.com.demo_productdatatable.dto.ProductDTO;
 import lulu.com.demo_productdatatable.request.ProductStatusUpdateRequest;
 import lulu.com.demo_productdatatable.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;

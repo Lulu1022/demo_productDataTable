@@ -13,6 +13,4 @@ public class ProductDTO {
     private int price;
     private int stock;
     private Integer productType; // 0:下架 1:上架
-
-    private String picture; // 來自 product_pictures 表
 }

@@ -2,8 +2,6 @@ package lulu.com.demo_productdatatable.service;
 
 import lulu.com.demo_productdatatable.dto.ProductDTO;
 import lulu.com.demo_productdatatable.entity.Product;
-import lulu.com.demo_productdatatable.entity.ProductPicture;
-import lulu.com.demo_productdatatable.repository.ProductPictureRepository;
 import lulu.com.demo_productdatatable.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,18 +16,6 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
-    // 簡化後的 convertToDTO，移除圖片處理
-    private ProductDTO convertToDTO(Product product) {
-        return new ProductDTO(
-                product.getId(),
-                product.getProductName(),
-                product.getPrice(),
-                product.getStock(),
-                product.getProductType(),
-                null  // 圖片相關的字段設為 null
-        );
-    }
 
     public Map<String, Object> getData(int draw, int start, int length, String searchValue, Integer orderColumn, String orderDirection, Integer status) {
         // 準備返回的 Map
@@ -79,6 +65,20 @@ public class ProductService {
         result.put("data", productDTOs);
 
         return result;
+    }
+
+    /**
+     * 資料庫查出來的物件（Product）轉換成 DTO（ProductDTO）
+     * 但當資料庫查出來的物件（ Product）跟 DTO（ProductDTO）的結構幾乎相同，可以不需要特別轉換，直接使用資料庫查出來的 Product 物件即可
+     */
+    private ProductDTO convertToDTO(Product product) {
+        return new ProductDTO(
+                product.getId(),
+                product.getProductName(),
+                product.getPrice(),
+                product.getStock(),
+                product.getProductType()
+        );
     }
 
     public void updateProductsStatus(List<Integer> productIds, Integer status) {

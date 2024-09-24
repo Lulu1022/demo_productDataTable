@@ -160,14 +160,32 @@ async function confirmBatchChangStatus(element){
 
     if(element.dataset.status === 'unshelve'){
         await changeProductStatusAPI(checkedList,1) // 目前商品狀態上架:1
+
+        // 全選 checkbox 取消勾選
+        const selectAllTable1 = document.getElementById('select-all-table1');
+        if (selectAllTable1 && selectAllTable1.checked) {
+            selectAllTable1.checked = false;
+            console.log('已上架全選 checkbox 已取消勾選');
+        }
+
         console.log('關閉提醒視窗');
         confirmRemoveModal.hide();
     }
 
     if(element.dataset.status === 'shelve'){
         await changeProductStatusAPI(checkedList,0) // 目前商品狀態下架:0
+
+        // 全選 checkbox 取消勾選
+        const selectAllTable2 = document.getElementById('select-all-table2');
+        if (selectAllTable2 && selectAllTable2.checked) {
+            selectAllTable2.checked = false;
+            console.log('已下架全選 checkbox 已取消勾選');
+        }
+
         console.log('關閉提醒視窗');
         confirmUploadModal.hide();
+
+
     }
 
     // 重新載入兩張 table
@@ -296,7 +314,6 @@ async function deleteProductAPI(productIds) {
 document.addEventListener('DOMContentLoaded', function () {
     initDataTable1();
     initDataTable2();
-    bindCheckboxEvents();
 });
 
 
